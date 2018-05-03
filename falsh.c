@@ -4,6 +4,7 @@
 #include <math.h>
 #include <unistd.h>
 
+
 void help_message();
 
 int main(int argc, char* argv[])
@@ -16,49 +17,22 @@ int main(int argc, char* argv[])
 	char help[256] = "help";
 	char *cmd;	
 	char *current_directory;
-	char new_directory[256];
+	char directory[256];
+	current_directory = directory;
 	char buffer[256];
-	char *path[] = {"/bin"};
+	//char *path[] = {"/bin"};
+	
 	int i, j = 0;
 	int count = 0;
 	
 	if (argc == 1) //if user enter './flash' and hit Enter
 	{			
-		//buffer[256] = '\0';
-		printf("falsh> ");
-		//scanf("%s", &cmd); //get user's input and eliminate all white spaces
 		
-		fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
-		
-		//printf("%s", buffer);
-		//return 0;
-		/*
-		for (i = 0; buffer[i] != '\0'; i++)
-		{
-			if(buffer[i] != ' ')
-			{
-				cmd[j] = cmd[i];
-				j++;
-			}				
-		}
-		cmd[j++] = '\0';
-		j = 0;
-		*/
-		//buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
-		/*
-		char *cmd = buffer;
-		
-		for (i = 0, j = 0; i < strlen(buffer); i++, j++)          
-		{
-			if (buffer[i] != ' ')                           
-				cmd[j] = buffer[i];                     
-			else
-				j--;                                     
-		}
-		cmd[j] = 0;
-		*/
+		printf("falsh> ");				
+		fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces				
 		
 		cmd = buffer;
+		
 		//this loop eliminate whitespaces in buffer
 		// and put all the chars into cmd
 		for (i = 0; i < strlen(buffer); i++)          
@@ -82,27 +56,41 @@ int main(int argc, char* argv[])
 		{
 			if(strcmp(cmd, pwd) == 0) 
 			{	
+				/*
+				Get the current working directory.
+				Put it into the array of char which current_directory is pointing to.
+				*/
+				getcwd(current_directory, 256);
+				
 				//print the current working directory
-				printf("Current directory: %s\n", getcwd(current_directory, 256));
+				//printf("Current directory: %s\n", getcwd(current_directory, 256));
+				printf("Current directory: %s\n", directory, 256);
+				//current_directory = NULL;
 			}			
 		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))			
 			{					
 				if(strlen(cmd) > 2) //if user enter [dir] [dir] ...
-				{	//extract the [dir] [dir] ... from input														
+				{	
+					//empty the array of char that contains the previous specified directory
+					memset(directory, 0, 255); 
+						
+					i = 0; j = 0;
+					
+					//extract the [dir] [dir] ... from input														
 					for (i = 2; i < strlen(cmd); i++)
 					{						                          
-						new_directory[j] = cmd[i];
+						directory[j] = cmd[i]; //update the directory with user's input
 						j++;						
-					}						
+					}										
+					directory[j + 1] = 0; //add NULL to the end of new directory					
 					
-					new_directory[j + 1] = 0; //add NULL to the end new_directory
-					j = 0;
-					chdir(new_directory); //change the directory to new_directory
+					
+					chdir(current_directory); //change the current directory to new directory
 					//printf("%s\n", cmd);						
 				}
 				else
 				{
-					//if [dir] are provided, change to the user’s home directory
+					//if [dir] are not provided, change to user’s home directory
 					chdir(getenv("HOME"));					
 				}
 				
@@ -110,16 +98,20 @@ int main(int argc, char* argv[])
 				
 			}			
 			else if((cmd[0] == 's') && 
-					(cmd[1] == 'e') &&
-					(cmd[2] == 't') &&
-					(cmd[3] == 'p') &&
-					(cmd[4] == 'a') &&
-					(cmd[5] == 't') &&
-					(cmd[6] == 'h'))	
+				(cmd[1] == 'e') &&
+				(cmd[2] == 't') &&
+				(cmd[3] == 'p') &&
+				(cmd[4] == 'a') &&
+				(cmd[5] == 't') &&
+				(cmd[6] == 'h'))	
 			{
-				printf("%s\n", path[0]);
-				//printf("%lu\n", strlen(path));
-				//printf("%s\n", cmd);
+				//if (strlen(cmd) > 8)
+				//{	
+					char* pPath;
+					pPath = getenv ("PATH");
+						if (pPath != NULL)
+							printf ("The current path is: %s", pPath);					
+				//}
 			}
 			else if(strcmp(cmd, help) == 0)
 			{
