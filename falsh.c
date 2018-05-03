@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 	char cd[256] = "cd";
 	char setpath[256] = "setpath";
 	char help[256] = "help";
+	char path[256];
 	char *cmd;	
 	char *current_directory;
 	char directory[256];
@@ -83,7 +84,7 @@ int main(int argc, char* argv[])
 						j++;						
 					}										
 					directory[j + 1] = 0; //add NULL to the end of new directory					
-					
+					j = 0;
 					
 					chdir(current_directory); //change the current directory to new directory
 					//printf("%s\n", cmd);						
@@ -96,7 +97,7 @@ int main(int argc, char* argv[])
 				
 				//printf("%s\n", cmd);
 				
-			}			
+			} //setpath command			
 			else if((cmd[0] == 's') && 
 				(cmd[1] == 'e') &&
 				(cmd[2] == 't') &&
@@ -105,13 +106,32 @@ int main(int argc, char* argv[])
 				(cmd[5] == 't') &&
 				(cmd[6] == 'h'))	
 			{
-				//if (strlen(cmd) > 8)
-				//{	
-					char* pPath;
-					pPath = getenv ("PATH");
-						if (pPath != NULL)
-							printf ("The current path is: %s", pPath);					
-				//}
+				if (strlen(cmd) > 8)
+				{	
+					char *env_name;
+					//char *env_value;
+					
+					//empty the array of char that contains the previous specified path
+					memset(path, 0, 255); 
+						
+					i = 0; j = 0;
+					
+					//extract the [dir] [dir] ... from input														
+					for (i = 7; i < strlen(cmd); i++)
+					{						                          
+						path[j] = cmd[i]; //update the path with user's input
+						j++;						
+					}										
+					path[j + 1] = 0; //add NULL to the end of new path					
+					j = 0;
+										
+					//adds the env_name to the environment with the value path
+					//overwrite the path
+					setenv(env_name, path, 1);
+					
+					if (env_name != NULL)
+						printf("%s is set.\n", getenv(env_name));										
+				}
 			}
 			else if(strcmp(cmd, help) == 0)
 			{
@@ -139,9 +159,7 @@ int main(int argc, char* argv[])
 				j++;
 			}
 			cmd[j -1] = 0; //add NULL to the end cmd
-			j = 0;
-			//buffer[256] = '\0';
-			//scanf("%s", &cmd); //get user's input and eliminate all white spaces					
+			j = 0;				
 		}			
 		
 		return 0;
