@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	char cd[256] = "cd";
 	char setpath[256] = "setpath";
 	char help[256] = "help";
-	char cmd[256];	
+	char *cmd;	
 	char current_directory[256];
 	char new_directory[256];
 	char buffer[256];
@@ -23,16 +23,16 @@ int main(int argc, char* argv[])
 	
 	if (argc == 1) //if user enter './flash' and hit Enter
 	{			
-		buffer[256] = '\0';
-		printf("falsh> ");
+		//buffer[256] = '\0';
+		//printf("falsh> ");
 		//scanf("%s", &cmd); //get user's input and eliminate all white spaces
 		
-		fgets(buffer, 256, stdin);
+		fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 		
 		//printf("%s", buffer);
 		//return 0;
-		
-		for (i = 0; i < strlen(buffer) - 1; i++)
+		/*
+		for (i = 0; buffer[i] != '\0'; i++)
 		{
 			if(buffer[i] != ' ')
 			{
@@ -42,9 +42,38 @@ int main(int argc, char* argv[])
 		}
 		cmd[j++] = '\0';
 		j = 0;
+		*/
+		//buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+		/*
+		char *cmd = buffer;
 		
-		printf(cmd);
-		return 0;
+		for (i = 0, j = 0; i < strlen(buffer); i++, j++)          
+		{
+			if (buffer[i] != ' ')                           
+				cmd[j] = buffer[i];                     
+			else
+				j--;                                     
+		}
+		cmd[j] = 0;
+		*/
+		
+		cmd = buffer;
+		//this loop eliminate whitespaces in buffer
+		// and put all the chars into cmd
+		for (i = 0; i < strlen(buffer); i++)          
+		{
+			if (buffer[i] != ' ')                           
+				cmd[j] = buffer[i];                     
+			else
+				j--;
+			j++;
+		}
+		cmd[j - 1] = 0; //add NULL to the end cmd
+		j = 0;
+		
+		//printf("%s ", cmd);
+		//printf("%lu\n", strlen(cmd));
+		//return 0;
 		
 		//while the user's cmd is not 'exit'
 		// get user's cmd and perform it.		
@@ -72,7 +101,7 @@ int main(int argc, char* argv[])
 					chdir(getenv("HOME"));					
 				}
 				*/
-				//printf("%s\n", cmd);
+				printf("%s\n", cmd);
 				
 			}
 			else if(strcmp(cmd, setpath) == 0)
@@ -88,20 +117,23 @@ int main(int argc, char* argv[])
 				printf("Command not found.\n");
 			}
 			
-			buffer[256] = '\0';
-			printf("falsh> ");		
+			//buffer[256] = '\0';
+			//printf("falsh> ");		
 			
+			fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 			
-		    fgets(buffer, 256, stdin);
-			
-			for (i = 0; i < strlen(buffer) - 1; i++)
+		    cmd = buffer;
+			//this loop eliminate whitespaces in buffer
+			// and put all the chars into cmd
+			for (i = 0; i < strlen(buffer); i++)          
 			{
-				if(buffer[i] != ' ')
-				{
-					cmd[j] = cmd[i];
-					j++;
-				}				
+				if (buffer[i] != ' ')                           
+					cmd[j] = buffer[i];                     
+				else
+					j--;
+				j++;
 			}
+			cmd[j -1] = 0; //add NULL to the end cmd
 			j = 0;
 			//buffer[256] = '\0';
 			//scanf("%s", &cmd); //get user's input and eliminate all white spaces					
