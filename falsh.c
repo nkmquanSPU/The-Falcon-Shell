@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 			}
 			else if(strcmp(cmd, help) == 0) //help command
 			{
-				help_message();
+				help_message(); //print out help message
 			}
 			else if((cmd[0] == 'c') && //Redirection: command > file_name
 					(cmd[1] == 'o') &&
