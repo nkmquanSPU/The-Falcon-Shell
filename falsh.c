@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 	char setpath[256] = "setpath";
 	char help[256] = "help";
 	char *cmd;	
-	char current_directory[256];
+	char *current_directory;
 	char new_directory[256];
 	char buffer[256];
 	int i, j = 0;
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	if (argc == 1) //if user enter './flash' and hit Enter
 	{			
 		//buffer[256] = '\0';
-		//printf("falsh> ");
+		printf("falsh> ");
 		//scanf("%s", &cmd); //get user's input and eliminate all white spaces
 		
 		fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
@@ -86,22 +86,29 @@ int main(int argc, char* argv[])
 			}			
 		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))
 			{	
-				/*
+				
 				if(strlen(cmd) > 2)
 				{					
-					//for (i = 2; i < strlen(cmd) - 1; i++)					
-						//new_directory[i - 2] = cmd[i];
+					//fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 					
-					//chdir(new_directory);
-					printf("%s\n", cmd);						
+					for (i = 2; i < strlen(cmd); i++)
+					{						                          
+						new_directory[j] = cmd[i];
+						j++;						
+					}						
+					
+					new_directory[j + 1] = 0; //add NULL to the end cmd
+					j = 0;
+					chdir(new_directory);
+					//printf("%s\n", cmd);						
 				}
 				else
 				{
 					//if no arguments are provided, change to the user’s home directory
 					chdir(getenv("HOME"));					
 				}
-				*/
-				printf("%s\n", cmd);
+				
+				//printf("%s\n", cmd);
 				
 			}
 			else if(strcmp(cmd, setpath) == 0)
@@ -118,7 +125,7 @@ int main(int argc, char* argv[])
 			}
 			
 			//buffer[256] = '\0';
-			//printf("falsh> ");		
+			printf("falsh> ");		
 			
 			fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 			
