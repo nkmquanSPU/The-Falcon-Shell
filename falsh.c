@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 	char setpath[256] = "setpath";
 	char help[256] = "help";
 	char path[256];
+	char file_name[256];
 	char *cmd;	
 	char *current_directory;
 	char directory[256];
@@ -133,21 +134,59 @@ int main(int argc, char* argv[])
 						printf("%s is set.\n", getenv(env_name));										
 				}
 			}
-			else if(strcmp(cmd, help) == 0)
+			else if(strcmp(cmd, help) == 0) //help command
 			{
 				help_message();
+			}
+			else if((cmd[0] == 'c') && //Redirection: command > file_name
+					(cmd[1] == 'o') &&
+					(cmd[2] == 'm') &&
+					(cmd[3] == 'm') &&
+					(cmd[4] == 'a') &&
+					(cmd[5] == 'n') &&
+					(cmd[6] == 'd'))								
+			{
+				i = 0; j = 0;
+				//extract file name from input														
+				for (i = 8; i < strlen(cmd); i++)
+				{						                          
+					file_name[j] = cmd[i]; //update the path with user's input
+					j++;						
+				}										
+				file_name[j + 1] = 0; //add NULL to the end of new path					
+				j = 0;
+				
+				
+				//freopen(file_name,"a",stderr); 
+				//dup2(fileno(stdout), fileno(stderr));
+				
+				//open and write fileno(stdout) to file_name
+				int std_out = dup(fileno(stdout));
+				freopen(file_name,"w",stdout);
+				
+				//open and append fileno(stderr) to file_name
+				int std_err = dup(fileno(stderr));
+				freopen(file_name,"a",stderr);
+				
+				//redirect the output of stdout to file_name.out
+				dup2(std_out,fileno(stdout));
+				close(std_out);
+				
+				//redirect the output of stderr to file_name.err
+				dup2(std_err,fileno(stderr));
+				close(std_err);
 			}
 			else //if error occurs
 			{
 				printf("Command not found.\n");
 			}
-			
-			//buffer[256] = '\0';
+						
 			printf("falsh> ");		
 			
 			fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 			
 		    cmd = buffer;
+			
 			//this loop eliminate whitespaces in buffer
 			// and put all the chars into cmd
 			for (i = 0; i < strlen(buffer); i++)          
