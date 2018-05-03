@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 	char *current_directory;
 	char new_directory[256];
 	char buffer[256];
+	char *path[] = {"/bin"};
 	int i, j = 0;
 	int count = 0;
 	
@@ -84,36 +85,41 @@ int main(int argc, char* argv[])
 				//print the current working directory
 				printf("Current directory: %s\n", getcwd(current_directory, 256));
 			}			
-		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))
-			{	
-				
-				if(strlen(cmd) > 2)
-				{					
-					//fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
-					
+		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))			
+			{					
+				if(strlen(cmd) > 2) //if user enter [dir] [dir] ...
+				{	//extract the [dir] [dir] ... from input														
 					for (i = 2; i < strlen(cmd); i++)
 					{						                          
 						new_directory[j] = cmd[i];
 						j++;						
 					}						
 					
-					new_directory[j + 1] = 0; //add NULL to the end cmd
+					new_directory[j + 1] = 0; //add NULL to the end new_directory
 					j = 0;
-					chdir(new_directory);
+					chdir(new_directory); //change the directory to new_directory
 					//printf("%s\n", cmd);						
 				}
 				else
 				{
-					//if no arguments are provided, change to the user’s home directory
+					//if [dir] are provided, change to the user’s home directory
 					chdir(getenv("HOME"));					
 				}
 				
 				//printf("%s\n", cmd);
 				
-			}
-			else if(strcmp(cmd, setpath) == 0)
+			}			
+			else if((cmd[0] == 's') && 
+					(cmd[1] == 'e') &&
+					(cmd[2] == 't') &&
+					(cmd[3] == 'p') &&
+					(cmd[4] == 'a') &&
+					(cmd[5] == 't') &&
+					(cmd[6] == 'h'))	
 			{
-				printf("setpath\n");
+				printf("%s\n", path[0]);
+				//printf("%lu\n", strlen(path));
+				//printf("%s\n", cmd);
 			}
 			else if(strcmp(cmd, help) == 0)
 			{
