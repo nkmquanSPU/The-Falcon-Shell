@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 				printf("Current directory: %s\n", directory, 256);
 				//current_directory = NULL;
 			}			
-		    	else if((cmd[0] == 'c') && (cmd[1] == 'd'))			
+		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))			
 			{					
 				if(strlen(cmd) > 2) //if user enter [dir] [dir] ...
 				{	
@@ -154,38 +154,33 @@ int main(int argc, char* argv[])
 				help_message(); //print out help message
 			}
 			else if((cmd[0] == 'c') && //Redirection: command > file_name
-				(cmd[1] == 'o') &&
-				(cmd[2] == 'm') &&
-				(cmd[3] == 'm') &&
-				(cmd[4] == 'a') &&
-				(cmd[5] == 'n') &&
-				(cmd[6] == 'd'))								
-			{
-				//printf("This is temp: %s\n", temp);
-				//return 0;
+					(cmd[1] == 'o') &&
+					(cmd[2] == 'm') &&
+					(cmd[3] == 'm') &&
+					(cmd[4] == 'a') &&
+					(cmd[5] == 'n') &&
+					(cmd[6] == 'd'))								
+			{				
 				
 				//erase values of new_data and file_name before give them new ones
 				memset(new_data, 0, 255); 
 				memset(file_name, 0, 255); 
 				
-				if(strlen(cmd) == 7) //missing filename argument
+				//find the index of '>' in user's input
+				char *ptr = NULL;					
+				
+				ptr = strchr(temp, '>');  //returns the pointer to the first occurrence of '>'
+				index = ptr - temp; //get the index of '>'
+				
+				if ((ptr == NULL) || (strlen(temp) == index + 2))
 				{
-					printf("	Filename is missing.");
+					printf("	Filename is missing.\n");
 					printf("	Cannot run the command.\n");
-				}
+				}				
 				else
-				{					
-					//find the index of '>' in user's input
-					char *ptr = NULL;					
-					
-					ptr = strchr(temp, '>');  //returns the pointer to the first occurrence of '>'
-					
-					if(ptr != NULL) 
-						index = ptr - temp; //get the index of '>'
-													
-					//printf("%d", index);
-					//return 0;
+				{																		
 					ptr = NULL;
+					
 					//get new data from user for the file
 					i = 0; j = 0;
 					for(i = 8; i < index - 1; i++)
@@ -204,25 +199,12 @@ int main(int argc, char* argv[])
 					}										
 					file_name[j + 1] = 0; //add NULL to the end of new path					
 					j = 0;					
-					
-					//printf("%s\n", new_data);
-					//printf("%d\n", strlen(new_data));
-					
-					//printf("%s\n", file_name);
-					//printf("%d\n", strlen(file_name));
-					
-					//return 0;
+										
 					/*
-					file_ptr = fopen(file_name, "r");
-					if(file_ptr == NULL) //if error occurs
-					{	
-						printf("	Error: %s\n", strerror(errno));
-						printf("	Cannot run the command.\n");						
-					}					
+					Open the file so that it is write only or read only.
+					If the file does not exist, create it.
 					*/
-						
-					//file_ptr = fopen(file_name, "r");
-					int filedesc = open(file_name, O_WRONLY | O_APPEND | O_CREAT);
+					int file_descriptor = open(file_name, O_WRONLY | O_APPEND | O_CREAT);
 					
 					//open and write fileno(stdout) to file_name
 					int std_out = dup(STDOUT_FILENO);
@@ -239,8 +221,7 @@ int main(int argc, char* argv[])
 					//redirect the output of stderr to file_name.err
 					dup2(std_err, STDERR_FILENO);
 					close(std_err);
-					
-				}																
+				}																																				
 			}
 			else //if user enter an invalid command
 			{
@@ -255,7 +236,7 @@ int main(int argc, char* argv[])
 			
 			fgets(buffer, 256, stdin); //get input from user. This may contains whitespaces
 			stpcpy(temp, buffer); //copy value of buffer to temp
-		    	cmd = buffer;
+		    cmd = buffer;
 			
 			//this loop eliminate whitespaces in buffer
 			// and put all the chars into cmd
