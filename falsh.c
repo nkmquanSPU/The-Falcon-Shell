@@ -4,7 +4,6 @@
 #include <math.h>
 #include <unistd.h>
 
-
 void help_message();
 
 int main(int argc, char* argv[])
