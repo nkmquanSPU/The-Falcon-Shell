@@ -1,4 +1,4 @@
-#The Falcon Shell
+# The Falcon Shell
 This program mimics basic behaviour of a shell:
 ```sh
 while true
@@ -14,23 +14,23 @@ while true
 
 ## Built-in Commands:
 `falsh [-h]`
-*The optional -h flag prints the help message and immediately exits.
-*After invoking falsh, it runs until the user types the exit command.
+* The optional -h flag prints the help message and immediately exits.
+* After invoking falsh, it runs until the user types the exit command.
 
 `exit` – exit the program
-*Usage: `exit`
+* Usage: `exit`
 
 `pwd` – print the current working directory
-*Usage: `pwd`
+* Usage: `pwd`
 
 `cd` – change directory
-*Usage: `cd`
+* Usage: `cd`
 
 `setpath` – sets the path, user must provide at least one argument (directory)
-*Usage: Usage: `setpath <dir> [dir] … [dir]`
+* Usage: Usage: `setpath <dir> [dir] … [dir]`
 
 `help` – list all built-in commands with short, user-friendly descriptions.
-*Usage: `help`
+* Usage: `help`
 
 ## Redirection:
 when the user invokes `command > filename`, redirect `command`'s standard output to
