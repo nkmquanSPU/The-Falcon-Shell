@@ -4,6 +4,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
 void help_message();
 
@@ -128,7 +129,7 @@ int main(int argc, char* argv[])
 					}										
 					path[j + 1] = 0; //add NULL to the end of new path					
 					j = 0;
-								
+										
 					//adds the env_name to the environment with the value path
 					//overwrite the path
 					//setenv(env_name, path, 1);
@@ -153,43 +154,57 @@ int main(int argc, char* argv[])
 					(cmd[5] == 'n') &&
 					(cmd[6] == 'd'))								
 			{
-				/*
-				if(errno)
+				if(strlen(cmd) == 7) //missing filename argument
 				{
-					strerror(errno);
-					return 0;
+					printf("Filename is missing.");
 				}
-				*/
+				else
+				{
+					i = 0; j = 0;
+					//extract file name from input														
+					for (i = 8; i < strlen(cmd); i++)
+					{						                          
+						file_name[j] = cmd[i]; //update the path with user's input
+						j++;						
+					}										
+					file_name[j + 1] = 0; //add NULL to the end of new path					
+					j = 0;
+					
+					//int filedesc = open("testfile.txt", O_WRONLY | O_APPEND);
+					//if(filedesc < 0)
+						//return 1;
+					
+					//freopen(file_name,"a",stderr); 
+					//dup2(fileno(stdout), fileno(stderr));
+					
+					//open and write fileno(stdout) to file_name
+					int std_out = dup(STDOUT_FILENO);
+					open(file_name, O_WRONLY, stdout);
+					//int std_out = dup(fileno(stdout));
+					//freopen(file_name, "w", stdout);
+					
+					//open and append fileno(stderr) to file_name
+					int std_err = dup(STDERR_FILENO);
+					open(file_name, O_APPEND, stderr);
+					//int std_err = dup(fileno(stderr));
+					//freopen(file_name, "a" ,stderr);
+					
+					//redirect the output of stdout to file_name.out
+					dup2(std_out, STDOUT_FILENO);
+					close(std_out);
+					
+					//redirect the output of stderr to file_name.err
+					dup2(std_err, STDERR_FILENO);
+					close(std_err);
+				}
+				//if(errno)
+				//{
+					//strerror(errno);
+					//return 0;
+				//}
 				
-				i = 0; j = 0;
-				//extract file name from input														
-				for (i = 8; i < strlen(cmd); i++)
-				{						                          
-					file_name[j] = cmd[i]; //update the path with user's input
-					j++;						
-				}										
-				file_name[j + 1] = 0; //add NULL to the end of new path					
-				j = 0;
 				
 				
-				//freopen(file_name,"a",stderr); 
-				//dup2(fileno(stdout), fileno(stderr));
-				
-				//open and write fileno(stdout) to file_name
-				int std_out = dup(fileno(stdout));
-				freopen(file_name, "w", stdout);
-				
-				//open and append fileno(stderr) to file_name
-				int std_err = dup(fileno(stderr));
-				freopen(file_name, "a" ,stderr);
-				
-				//redirect the output of stdout to file_name.out
-				dup2(std_out, fileno(stdout));
-				close(std_out);
-				
-				//redirect the output of stderr to file_name.err
-				dup2(std_err, fileno(stderr));
-				close(std_err);
 			}
 			else //if user enter an invalid command
 			{
