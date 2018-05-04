@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
+#include <errno.h>
 
 void help_message();
 
@@ -108,6 +109,9 @@ int main(int argc, char* argv[])
 			{
 				if (strlen(cmd) > 8)
 				{	
+					//the PATH when falsh launches contains only /bin.
+					setenv("PATH", "/bin", 1);
+					printf("\nOriginal PATH: %s\n", getenv("PATH"));
 					char *env_name;
 					//char *env_value;
 					
@@ -124,13 +128,17 @@ int main(int argc, char* argv[])
 					}										
 					path[j + 1] = 0; //add NULL to the end of new path					
 					j = 0;
-										
+								
 					//adds the env_name to the environment with the value path
 					//overwrite the path
-					setenv(env_name, path, 1);
-					
+					//setenv(env_name, path, 1);
+					setenv("PATH", path, 1);
 					if (env_name != NULL)
-						printf("%s is set.\n", getenv(env_name));										
+						printf("%s is set.\n", getenv("PATH"));	
+							
+					setenv("PATH", path, 1);
+					//setenv("PATH", path, 1);
+					printf("PATH now contains: %s\n\n", getenv("PATH"));
 				}
 			}
 			else if(strcmp(cmd, help) == 0) //help command
@@ -145,6 +153,14 @@ int main(int argc, char* argv[])
 					(cmd[5] == 'n') &&
 					(cmd[6] == 'd'))								
 			{
+				/*
+				if(errno)
+				{
+					strerror(errno);
+					return 0;
+				}
+				*/
+				
 				i = 0; j = 0;
 				//extract file name from input														
 				for (i = 8; i < strlen(cmd); i++)
@@ -161,21 +177,21 @@ int main(int argc, char* argv[])
 				
 				//open and write fileno(stdout) to file_name
 				int std_out = dup(fileno(stdout));
-				freopen(file_name,"w",stdout);
+				freopen(file_name, "w", stdout);
 				
 				//open and append fileno(stderr) to file_name
 				int std_err = dup(fileno(stderr));
-				freopen(file_name,"a",stderr);
+				freopen(file_name, "a" ,stderr);
 				
 				//redirect the output of stdout to file_name.out
-				dup2(std_out,fileno(stdout));
+				dup2(std_out, fileno(stdout));
 				close(std_out);
 				
 				//redirect the output of stderr to file_name.err
-				dup2(std_err,fileno(stderr));
+				dup2(std_err, fileno(stderr));
 				close(std_err);
 			}
-			else //if error occurs
+			else //if user enter an invalid command
 			{
 				printf("Command not found.\n");
 			}
