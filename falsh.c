@@ -181,8 +181,8 @@ int main(int argc, char* argv[])
 				{																		
 					ptr = NULL;
 					
+					j = 0;
 					//get new data from user for the file
-					i = 0; j = 0;
 					for(i = 8; i < index - 1; i++)
 					{
 						new_data[j] = temp[i];
@@ -190,8 +190,8 @@ int main(int argc, char* argv[])
 					}
 					new_data[j + 1] = 0; //add NULL to the end of new path	
 					
-					i = 0; j = 0;
-					//extract file name from user														
+					j = 0;
+					//get file name from user														
 					for (i = index + 2; i < strlen(temp) - 1; i++)
 					{						                          
 						file_name[j] = temp[i]; //update the path with user's input
@@ -206,21 +206,40 @@ int main(int argc, char* argv[])
 					*/
 					int file_descriptor = open(file_name, O_WRONLY | O_APPEND | O_CREAT);
 					
-					//open and write fileno(stdout) to file_name
-					int std_out = dup(STDOUT_FILENO);
-					open(file_name, O_WRONLY, stdout);						
+					if (file_descriptor < 0) //invalid file descriptor 
+					{
+						printf("The value of file descriptor is invalid.");
+						return 0;
+					}
+					else
+					{
+						//open and write fileno(stdout) to file_name
+						//int std_out = dup(STDOUT_FILENO); //creates a copy of a file descriptor
+						int std_out = open(file_name, O_WRONLY, stdout);
+							
+						if (std_out == 1)
+						{
+							write(std_out,new_data, 51); //write new_date to .out file
+							//redirect the output of stdout to file_name.out
+							dup2(std_out, STDOUT_FILENO);							
+							close(std_out);
+						}
+						else
+						{
+							char error_message[80] = "Error writing to" ;
+							strcat(error_message, file_name);
+							
+							//open and append fileno(stderr) to file_name
+							//int std_err = dup(STDERR_FILENO);
+							int std_err = open(file_name, O_APPEND, stderr);						
+							write(std_err,error_message, 51); //write new_date to .err file
+							
+							//redirect the output of stderr to file_name.err
+							dup2(std_err, STDERR_FILENO);
+							close(std_err);
+						}																		
+					}					
 					
-					//open and append fileno(stderr) to file_name
-					int std_err = dup(STDERR_FILENO);
-					open(file_name, O_APPEND, stderr);						
-					
-					//redirect the output of stdout to file_name.out
-					dup2(std_out, STDOUT_FILENO);
-					close(std_out);
-					
-					//redirect the output of stderr to file_name.err
-					dup2(std_err, STDERR_FILENO);
-					close(std_err);
 				}																																				
 			}
 			else //if user enter an invalid command
