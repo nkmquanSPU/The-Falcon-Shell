@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-
+#include <sys/types.h>
+#include <sys/wait.h>
+ 
 void help_message();
 
 int main(int argc, char* argv[])
@@ -25,13 +27,33 @@ int main(int argc, char* argv[])
 	current_directory = directory;
 	char buffer[256];
 	char temp[256];
-	char new_data[256];
-	
+	char new_data[256];	
 	int i, j = 0;
 	int count = 0;
 	int index;
 	
-	if (argc == 1) //if user enter './flash' and hit Enter
+	if (argc == 2) //to run non-built-in command
+	{
+		char *command_name[1]; //for example new_cat.c or new_wc.c
+		pid_t pid; //process's ID
+		int status_process;		
+		char *exec_file = command_name[1];
+		
+		if ((pid = fork()) < 0) //fork() the child process
+		{		
+			printf("fork() failed."); //fork() has failed		
+		}
+		else if (pid == 0)
+		{		
+			if (execv(exec_file, command_name) < 0) //execute the command_name
+			{	
+				printf("execv() failed."); //execv() has failed		
+			}			
+		}
+		else
+			while (wait(&status_process) != pid); //wait for the child to return
+	}
+	else if (argc == 1) //if user enter './flash' and hit Enter
 	{			
 		
 		printf("falsh> ");	
@@ -56,28 +78,20 @@ int main(int argc, char* argv[])
 		cmd[j - 1] = 0; //add NULL to the end cmd
 		j = 0;
 		
-		//printf("%s ", cmd);
-		//printf("%lu\n", strlen(cmd));
-		//return 0;
-		
 		//while the user's cmd is not 'exit'
 		// get user's cmd and perform it.		
-		while(strcmp(cmd, exit) != 0) 
+		while(strcmp(cmd, exit) != 0)  // while the command is not the 'exit'
 		{
-			if(strcmp(cmd, pwd) == 0) 
+			if(strcmp(cmd, pwd) == 0) //pwd command
 			{	
 				/*
 				Get the current working directory.
 				Put it into the array of char which current_directory is pointing to.
 				*/
 				getcwd(current_directory, 256);
-				
-				//print the current working directory
-				//printf("Current directory: %s\n", getcwd(current_directory, 256));
-				printf("Current directory: %s\n", directory, 256);
-				//current_directory = NULL;
+				printf("Current directory: %s\n", directory, 256);				
 			}			
-		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))			
+		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))	//cd command		
 			{					
 				if(strlen(cmd) > 2) //if user enter [dir] [dir] ...
 				{	
@@ -95,19 +109,15 @@ int main(int argc, char* argv[])
 					directory[j + 1] = 0; //add NULL to the end of new directory					
 					j = 0;
 					
-					chdir(current_directory); //change the current directory to new directory
-					//printf("%s\n", cmd);						
+					chdir(current_directory); //change the current directory to new directory						
 				}
-				else
-				{
-					//if [dir] are not provided, change to user’s home directory
+				else //if [dir] are not provided, change to user’s home directory
+				{				
 					chdir(getenv("HOME"));					
-				}
+				}				
 				
-				//printf("%s\n", cmd);
-				
-			} //setpath command			
-			else if((cmd[0] == 's') && 
+			} 	
+			else if((cmd[0] == 's') && //setpath command		
 				(cmd[1] == 'e') &&
 				(cmd[2] == 't') &&
 				(cmd[3] == 'p') &&
@@ -121,7 +131,6 @@ int main(int argc, char* argv[])
 					setenv("PATH", "/bin", 1);
 					printf("\nOriginal PATH: %s\n", getenv("PATH"));
 					char *env_name;
-					//char *env_value;
 					
 					//empty the array of char that contains the previous specified path
 					memset(path, 0, 255); 
@@ -136,17 +145,15 @@ int main(int argc, char* argv[])
 					}										
 					path[j + 1] = 0; //add NULL to the end of new path					
 					j = 0;
-										
+																		
 					//adds the env_name to the environment with the value path
-					//overwrite the path
-					//setenv(env_name, path, 1);
+					// and overwrite the path
 					setenv("PATH", path, 1);
 					if (env_name != NULL)
 						printf("%s is set.\n", getenv("PATH"));	
 							
 					setenv("PATH", path, 1);
-					//setenv("PATH", path, 1);
-					printf("PATH now contains: %s\n\n", getenv("PATH"));
+					printf("PATH now contains: %s\n\n", getenv("PATH"));												
 				}
 			}
 			else if(strcmp(cmd, help) == 0) //help command
@@ -160,8 +167,7 @@ int main(int argc, char* argv[])
 					(cmd[4] == 'a') &&
 					(cmd[5] == 'n') &&
 					(cmd[6] == 'd'))								
-			{				
-				
+			{							
 				//erase values of new_data and file_name before give them new ones
 				memset(new_data, 0, 255); 
 				memset(file_name, 0, 255); 
@@ -179,7 +185,8 @@ int main(int argc, char* argv[])
 				}				
 				else
 				{																		
-					ptr = NULL;
+					ptr = NULL; //set ptr to NULL so that we can re-use it for
+								// later inputs from user
 					
 					j = 0;
 					//get new data from user for the file
@@ -242,7 +249,7 @@ int main(int argc, char* argv[])
 					
 				}																																				
 			}
-			else //if user enter an invalid command
+			else //if user enters an invalid command
 			{
 				printf("Command not found.\n");
 			}
