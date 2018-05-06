@@ -32,12 +32,11 @@ int main(int argc, char* argv[])
 	int count = 0;
 	int index;
 	
-	if (argc == 2) //to run non-built-in command
+	if (argc == 2) //to run non-built-in command, for example: ./falsh new_cat.c
 	{
-		char *command_name[1]; //for example new_cat.c or new_wc.c
 		pid_t pid; //process's ID
-		int status_process;		
-		char *exec_file = command_name[1];
+		int process_status;		
+		char *exec_file;
 		
 		if ((pid = fork()) < 0) //fork() the child process
 		{		
@@ -45,13 +44,13 @@ int main(int argc, char* argv[])
 		}
 		else if (pid == 0)
 		{		
-			if (execv(exec_file, command_name) < 0) //execute the command_name
+			if (execv(exec_file, &argv[1]) < 0) //execute the command_name
 			{	
 				printf("execv() failed."); //execv() has failed		
 			}			
 		}
 		else
-			while (wait(&status_process) != pid); //wait for the child to return
+			while (wait(&process_status) != pid); //wait for the child to return
 	}
 	else if (argc == 1) //if user enter './flash' and hit Enter
 	{			
