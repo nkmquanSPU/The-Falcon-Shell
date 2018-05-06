@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 				Put it into the array of char which current_directory is pointing to.
 				*/
 				getcwd(current_directory, 256);
-				printf("Current directory: %s\n", directory, 256);				
+				printf("Current directory: %s\n", directory);				
 			}			
 		    else if((cmd[0] == 'c') && (cmd[1] == 'd'))	//cd command		
 			{					
